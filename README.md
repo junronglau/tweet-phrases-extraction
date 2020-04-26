@@ -4,4 +4,4 @@ work in progress
 
 
 
-Template credits: https://github.com/Ahmkel/Keras-Project-Template
+Thanks Ahmkel for the Project Template: https://github.com/Ahmkel/Keras-Project-Template
