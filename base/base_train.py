@@ -1,6 +1,5 @@
 import tensorflow as tf
 
-
 class BaseTrain:
     def __init__(self, sess, model, data, config, logger):
         self.model = model
