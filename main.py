@@ -22,7 +22,7 @@ def main():
     data_loader = RobertaDataLoader(config)
 
     print('Create the model.')
-    model = RobertaModel(config,pretrained)
+    model = RobertaModel(config)
 
     print('Create the trainer')
     trainer = RobertaTrainer(model.model, data_loader.get_train_data(), config)
@@ -32,3 +32,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
+

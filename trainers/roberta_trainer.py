@@ -1,4 +1,4 @@
-from base.base_trainer import BaseTrain
+from base.base_train import BaseTrain
 import os
 from keras.callbacks import ModelCheckpoint, TensorBoard
 
@@ -49,5 +49,5 @@ class RobertaTrainer(BaseTrain):
         )
         self.loss.extend(history.history['loss'])
         self.acc.extend(history.history['acc'])
-        self.val_loss.extend(history.history['val_loss'])
+        self.val_loss.extend(history.history['val_loss']) 
         self.val_acc.extend(history.history['val_acc'])

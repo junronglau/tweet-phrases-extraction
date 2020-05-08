@@ -1,19 +1,17 @@
 {
   "exp": {
-    "name": "conv_mnist_from_config"
-  },
-  "data_loader": {
-    "name": "conv_mnist_data_loader.ConvMnistDataLoader"
+    "name": "roberta_kaggle",
+    "comet_api_key":  "GumcB0S2230qAD8whgeRPjGdL",
+    "data_path" : "datasets/train.csv",
+    "max_len" : 128
   },
   "model":{
-    "name": "conv_mnist_model.ConvMnistModel",
     "learning_rate": 0.001,
     "optimizer": "adam"
   },
   "trainer":{
-    "name": "simple_mnist_trainer.SimpleMnistModelTrainer",
-    "num_epochs": 20,
-    "batch_size": 64,
+    "num_epochs": 5,
+    "batch_size": 32,
     "validation_split":0.25,
     "verbose_training": true
   },
@@ -24,6 +22,5 @@
    "checkpoint_save_weights_only": true,
     "checkpoint_verbose": true,
     "tensorboard_write_graph": true
-  },
-  "comet_api_key":  "GumcB0S2230qAD8whgeRPjGdL"
+  }
 }
