@@ -1,53 +1,49 @@
 from base.base_train import BaseTrain
+from utils.metric import jaccard
+import numpy as np
 import os
-from keras.callbacks import ModelCheckpoint, TensorBoard
 
 class RobertaTrainer(BaseTrain):
-    def __init__(self, model, data, config):
-        super(RobertaTrainer, self).__init__(model, data, config)
-        self.callbacks = []
-        self.loss = []
-        self.acc = []
-        self.val_loss = []
-        self.val_acc = []
+    def __init__(self, model, data, config, experiment):
+        super(RobertaTrainer, self).__init__(model, data, config, experiment)
         self.init_callbacks()
 
     def init_callbacks(self):
-        self.callbacks.append(
-            ModelCheckpoint(
-                filepath=os.path.join(self.config.callbacks.checkpoint_dir, '%s-{epoch:02d}-{val_loss:.2f}.hdf5' % self.config.exp.name),
-                monitor=self.config.callbacks.checkpoint_monitor,
-                mode=self.config.callbacks.checkpoint_mode,
-                save_best_only=self.config.callbacks.checkpoint_save_best_only,
-                save_weights_only=self.config.callbacks.checkpoint_save_weights_only,
-                verbose=self.config.callbacks.checkpoint_verbose,
-            )
-        )
-
-        self.callbacks.append(
-            TensorBoard(
-                log_dir=self.config.callbacks.tensorboard_log_dir,
-                write_graph=self.config.callbacks.tensorboard_write_graph,
-            )
-        )
-
-        if hasattr(self.config,"comet_api_key"):
-            from comet_ml import Experiment
-            experiment = Experiment(api_key=self.config.comet_api_key, project_name=self.config.exp_name)
-            experiment.disable_mp()
-            experiment.log_multiple_params(self.config)
-            self.callbacks.append(experiment.get_keras_callback())
+        if self.experiment:
+            parameters = {
+                "learning_rate" : self.config.model.learning_rate,
+                "optimizer" : self.config.model.optimizer,
+                "num_epochs": self.config.trainer.num_epochs,
+                "batch_size": self.config.trainer.batch_size,
+                "validation_split": self.config.trainer.validation_split,
+                "verbose_training": self.config.trainer.verbose_training,
+            }
+            self.experiment.log_parameters(parameters)
+            self.experiment.disable_mp()
+            self.experiment.get_callback('keras')
 
     def train(self):
-        history = self.model.fit(
+        self.model.fit(
             self.data[0], self.data[1],
             epochs=self.config.trainer.num_epochs,
             verbose=self.config.trainer.verbose_training,
             batch_size=self.config.trainer.batch_size,
-            validation_split=self.config.trainer.validation_split,
-            callbacks=self.callbacks,
+            validation_split=self.config.trainer.validation_split
         )
-        self.loss.extend(history.history['loss'])
-        self.acc.extend(history.history['acc'])
-        self.val_loss.extend(history.history['val_loss']) 
-        self.val_acc.extend(history.history['val_acc'])
+
+    def predict(self,test_data,tokenizer):
+        """
+        test_data is in the following format: [id, att, tok], [text] , where [text] is the actual labelled text
+        """
+        preds = self.model.predict(test_data[0])
+        preds_start = np.argmax(preds[0],axis=1)
+        preds_end = np.argmax(preds[1],axis=1)
+        pred_text = [tokenizer.decode(test_data[0][0][i]) if preds_start[i] > preds_end[i] else tokenizer.decode(test_data[0][0][i][preds_start[i]-1:preds_end[i]]) for i in range(len(test_data))]     
+        jaccard_score = np.mean([jaccard(pred_text[i],test_data[1][i]) for i in range(len(test_data))])
+        if self.experiment:
+            metrics = {
+                'Jaccard similarity': jaccard_score
+            }
+            self.experiment.log_metrics(metrics)
+            
+        print("Jaccard score:",jaccard_score)

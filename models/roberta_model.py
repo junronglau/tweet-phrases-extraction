@@ -9,16 +9,13 @@ class RobertaModel(BaseModel):
         self.build_model()
 
     def build_model(self):
-
         ids = tf.keras.layers.Input((self.config.exp.max_len,), dtype=tf.int32)
         att = tf.keras.layers.Input((self.config.exp.max_len,), dtype=tf.int32)
         tok = tf.keras.layers.Input((self.config.exp.max_len,), dtype=tf.int32)
         
         # Network architecture
-        # pretrained_config = RobertaConfig.from_pretrained(self.pretrained.config)  #'config-roberta-base.json'
-        # bert_model = TFRobertaModel.from_pretrained(self.pretrained.model, config=pretrained_config)
-        config = RobertaConfig()  
-        bert_model = TFRobertaModel(config)
+        config = RobertaConfig.from_pretrained(self.config.exp.roberta_path +'config-roberta-base.json') 
+        bert_model = TFRobertaModel.from_pretrained(self.config.exp.roberta_path +'pretrained-roberta-base.h5',config=config)
         x = bert_model(ids,attention_mask=att,token_type_ids=tok)
 
         x1 = tf.keras.layers.Dropout(0.1)(x[0])
@@ -34,5 +31,4 @@ class RobertaModel(BaseModel):
         x2 = tf.keras.layers.Activation('softmax')(x2)
 
         self.model = tf.keras.models.Model(inputs=[ids, att, tok], outputs=[x1,x2])
-        # optimizer = tf.keras.optimizers.Adam(learning_rate=2.5e-5)
         self.model.compile(loss='categorical_crossentropy', optimizer=self.config.model.optimizer)

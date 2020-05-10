@@ -7,3 +7,4 @@ class BaseDataLoader(object):
 
     def get_test_data(self):
         raise NotImplementedError
+    

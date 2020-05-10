@@ -2,7 +2,9 @@
   "exp": {
     "name": "roberta_kaggle",
     "comet_api_key":  "GumcB0S2230qAD8whgeRPjGdL",
-    "data_path" : "datasets/train.csv",
+    "data_path" : {"train": "datasets/train.csv",
+                   "test": "datasets/test.csv"},
+    "roberta_path" : "datasets/tf-roberta/",
     "max_len" : 128
   },
   "model":{
@@ -10,17 +12,9 @@
     "optimizer": "adam"
   },
   "trainer":{
-    "num_epochs": 5,
-    "batch_size": 32,
+    "num_epochs": 1,
+    "batch_size": 16,
     "validation_split":0.25,
     "verbose_training": true
-  },
-  "callbacks":{
-    "checkpoint_monitor": "val_loss",
-    "checkpoint_mode": "min",
-    "checkpoint_save_best_only": true,
-   "checkpoint_save_weights_only": true,
-    "checkpoint_verbose": true,
-    "tensorboard_write_graph": true
   }
 }

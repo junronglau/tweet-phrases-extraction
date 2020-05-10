@@ -1,3 +1,4 @@
+from comet_ml import Experiment
 from data_loader.roberta_data_loader import RobertaDataLoader
 from models.roberta_model import RobertaModel
 from trainers.roberta_trainer import RobertaTrainer
@@ -15,21 +16,26 @@ def main():
         print("missing or invalid arguments")
         exit(0)
 
-    # create the experiments dirs
-    create_dirs([config.callbacks.tensorboard_log_dir, config.callbacks.checkpoint_dir])
-
     print('Create the data generator.')
     data_loader = RobertaDataLoader(config)
 
     print('Create the model.')
     model = RobertaModel(config)
 
+    print('Creating the Experiment')
+    experiment = Experiment(api_key=config.exp.comet_api_key, project_name=config.exp.name, auto_output_logging="simple")
+    
     print('Create the trainer')
-    trainer = RobertaTrainer(model.model, data_loader.get_train_data(), config)
+    trainer = RobertaTrainer(model.model, data_loader.get_train_data(), config, experiment)
+    
+    with experiment.train():
+        print('Start training the model.')
+        trainer.train()
 
-    print('Start training the model.')
-    trainer.train()
-
+    with experiment.test():
+        print('Predicting the testing data')
+        trainer.predict(data_loader.get_test_data(), data_loader.get_tokenizer())
+    
 if __name__ == '__main__':
     main()
 
