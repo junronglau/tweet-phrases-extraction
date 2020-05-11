@@ -5,6 +5,7 @@
     "data_path" : {"train": "datasets/train.csv",
                    "test": "datasets/test.csv"},
     "roberta_path" : "datasets/tf-roberta/",
+    "roberta_weights" : "v1-roberta-pretrained.h5",
     "max_len" : 128
   },
   "model":{

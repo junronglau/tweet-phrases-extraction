@@ -4,8 +4,8 @@ import numpy as np
 import os
 
 class RobertaTrainer(BaseTrain):
-    def __init__(self, model, data, config, experiment):
-        super(RobertaTrainer, self).__init__(model, data, config, experiment)
+    def __init__(self, model, experiment, config, data=None):
+        super(RobertaTrainer, self).__init__(model, experiment, config, data=None)
         self.init_callbacks()
 
     def init_callbacks(self):
@@ -38,12 +38,12 @@ class RobertaTrainer(BaseTrain):
         preds = self.model.predict(test_data[0])
         preds_start = np.argmax(preds[0],axis=1)
         preds_end = np.argmax(preds[1],axis=1)
-        pred_text = [tokenizer.decode(test_data[0][0][i]) if preds_start[i] > preds_end[i] else tokenizer.decode(test_data[0][0][i][preds_start[i]-1:preds_end[i]]) for i in range(len(test_data))]     
-        jaccard_score = np.mean([jaccard(pred_text[i],test_data[1][i]) for i in range(len(test_data))])
+        pred_text = [tokenizer.decode(test_data[0][0][i][preds_start[i]-1:preds_end[i]]) for i in range(len(test_data[0][0]))]     
+        jaccard_score = np.mean([jaccard(pred_text[i],test_data[1][i]) for i in range(len(test_data[0][0]))])
         if self.experiment:
             metrics = {
                 'Jaccard similarity': jaccard_score
             }
             self.experiment.log_metrics(metrics)
-            
         print("Jaccard score:",jaccard_score)
+        return pred_text

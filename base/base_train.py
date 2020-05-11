@@ -1,5 +1,5 @@
 class BaseTrain(object):
-    def __init__(self, model, data, config, experiment):
+    def __init__(self, model, experiment, config, data=None):
         self.model = model
         self.data = data
         self.config = config
