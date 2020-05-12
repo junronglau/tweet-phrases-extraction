@@ -1,6 +1,8 @@
 # tweet phrases extraction
 
-This was originally a project submission for Kaggle's Tweet phrase extraction but for learning purposes, it is refactored into a proper structure and deployed as an API using Flask and Docker
+(Work in progress)
+This was originally a project submission for Kaggle's Tweet phrase extraction to explore Google's BERT, as well as a QA approach to extracting relevant text from a document. 
+For learning purposes, it is refactored and deployed as an API using Flask and Docker.
 
 - Install requirements on your virtual env with requirements.txt
 - Run main.py to train model from scratch

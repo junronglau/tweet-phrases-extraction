@@ -3,7 +3,6 @@ from data_loader.roberta_data_loader import RobertaDataLoader
 from models.roberta_model import RobertaModel
 from trainers.roberta_trainer import RobertaTrainer
 from utils.config import process_config
-from utils.dirs import create_dirs
 from utils.utils import get_args
 import flask
 
