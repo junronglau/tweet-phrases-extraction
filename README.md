@@ -56,10 +56,14 @@ The model requires these inputs of a fixed length
 - Tokenized documents (These are represented in the form of IDs and sentence seperators)
 - Attention mask (These indicates the starting and ending position of our documents)
 - Token types (roBERTa does not require Next Sentence Prediction, hence we indicate it as all Ones)
-And outputs 2 vectors, one for the starting position and one for ending position. These help us extract the selected_text column which we are predicting.
+
+  
+
+
+The outputs are of 2 vectors: one for the starting position and one for ending position. These help us extract the selected_text column which we are predicting.
 
 - roBERTa pretrained model : Similar to BERT(small), this has 12 layers of transformer encoders 
-For each head, we have the following layers:
+  For each head, we have the following layers:
 - Drop out layer : 10% drop out rate
 - Bidirectional LSTM layer : Using an LSTM layer, we are able to preserve spatial information of the roBERTa output
 - Drop out layer : 10% drop out rate
