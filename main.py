@@ -25,11 +25,12 @@ def main():
     experiment = Experiment(api_key=config.exp.comet_api_key, project_name=config.exp.name, auto_output_logging="simple")
     
     print('Create the trainer')
-    trainer = RobertaTrainer(model.model, data_loader.get_train_data(), config, experiment)
+    trainer = RobertaTrainer(model.model, experiment, config, data_loader.get_train_data())
     
     with experiment.train():
         print('Start training the model.')
         trainer.train()
+        model.save()
 
     with experiment.test():
         print('Predicting the testing data')

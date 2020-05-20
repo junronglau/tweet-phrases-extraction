@@ -6,18 +6,18 @@ import tokenizers
 class RobertaDataLoader(BaseDataLoader):
     def __init__(self, config):
         super(RobertaDataLoader, self).__init__(config)
-        self.X_train, self.y_train = self.load_data(self.config.exp.data_path.train)
+        self.X_train, self.y_train = self.load_data(self.config.data.data_path.train)
         self.X_train, self.y_train = self.preprocess_data(self.X_train,self.y_train)
 
-        self.X_test, self.y_test = self.load_data(self.config.exp.data_path.test)
+        self.X_test, self.y_test = self.load_data(self.config.data.data_path.test)
         self.X_test, self.y_test_token = self.preprocess_data(self.X_test,self.y_test)
         
     def get_tokenizer(self):
         tokenizer =  tokenizers.ByteLevelBPETokenizer(
-                        vocab_file= self.config.exp.roberta_path + 'vocab-roberta-base.json', 
-                        merges_file= self.config.exp.roberta_path +'merges-roberta-base.txt', 
-                        lowercase=True,
-                        add_prefix_space=True
+                        vocab_file= self.config.data.roberta.path + self.config.data.roberta.vocab,  
+                        merges_file= self.config.data.roberta.path + self.config.data.roberta.merges, 
+                        lowercase= self.config.data.roberta.lowercase,
+                        add_prefix_space= self.config.data.roberta.add_prefix_space
                 )
         return tokenizer
     
@@ -36,7 +36,7 @@ class RobertaDataLoader(BaseDataLoader):
         df = df.fillna('')
         inputId, attnMask ,startTokens, endTokens = self.get_Inputs(df,'text','sentiment','selected_text')
         #roBERTa needs this to be passed with values 0
-        typeTokens = np.zeros((len(df),self.config.exp.max_len),dtype='int32')
+        typeTokens = np.zeros((len(df),self.config.data.roberta.max_len),dtype='int32')
         return [inputId, attnMask, typeTokens], [startTokens, endTokens]
 
     def get_Inputs(self, df, inputCol, targetCol, selectedCol):
@@ -59,15 +59,15 @@ class RobertaDataLoader(BaseDataLoader):
         return textCol.astype(str).map(lambda x : self.get_tokenizer().encode(x.strip()).ids if not (x.isspace() or len(x)==0) else [])
 
     def get_posTokens(self, rowLen,stLen,mtLen):
-        startTokens = np.zeros((rowLen,self.config.exp.max_len),dtype='int32')
+        startTokens = np.zeros((rowLen,self.config.data.roberta.max_len),dtype='int32')
         startTokens[np.arange(len(startTokens)),(stLen+1).tolist()] = 1
-        endTokens = np.zeros((rowLen,self.config.exp.max_len),dtype='int32')
+        endTokens = np.zeros((rowLen,self.config.data.roberta.max_len),dtype='int32')
         endTokens[np.arange(len(endTokens)), (stLen+mtLen).tolist() ] = 1
         return startTokens, endTokens
 
     def get_idTokens(self, inputTokenizer,targetTokenizer):
-        return np.asarray([[0] + inputId + [2,2] + targetId + [2] + [1]*(self.config.exp.max_len - (len(inputId+targetId)+4)) for inputId, targetId in zip(inputTokenizer,targetTokenizer)], dtype='int32')
+        return np.asarray([[0] + inputId + [2,2] + targetId + [2] + [1]*(self.config.data.roberta.max_len - (len(inputId+targetId)+4)) for inputId, targetId in zip(inputTokenizer,targetTokenizer)], dtype='int32')
 
     def get_attnMasks(self, inputTokenizer,targetTokenizer):
-        return np.asarray([[1]* (len(inputId+targetId)+4) + [0]*(self.config.exp.max_len - (len(inputId+targetId)+4)) for inputId, targetId in zip(inputTokenizer,targetTokenizer)], dtype='int32')
+        return np.asarray([[1]* (len(inputId+targetId)+4) + [0]*(self.config.data.roberta.max_len - (len(inputId+targetId)+4)) for inputId, targetId in zip(inputTokenizer,targetTokenizer)], dtype='int32')
 

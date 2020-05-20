@@ -5,7 +5,8 @@ import os
 
 class RobertaTrainer(BaseTrain):
     def __init__(self, model, experiment, config, data=None):
-        super(RobertaTrainer, self).__init__(model, experiment, config, data=None)
+        super(RobertaTrainer, self).__init__(model, experiment, config)
+        self.data = data
         self.init_callbacks()
 
     def init_callbacks(self):

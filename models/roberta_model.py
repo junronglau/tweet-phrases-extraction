@@ -2,8 +2,6 @@ from base.base_model import BaseModel
 from utils.metric import jaccard
 import tensorflow as tf
 from transformers import TFRobertaModel, RobertaConfig
-import keras.backend as K
-import keras.initializers
 
 class RobertaModel(BaseModel):
     def __init__(self, config):
@@ -11,31 +9,43 @@ class RobertaModel(BaseModel):
         self.build_model()
 
     def build_model(self):
-        ids = tf.keras.layers.Input((self.config.exp.max_len,), dtype=tf.int32)
-        att = tf.keras.layers.Input((self.config.exp.max_len,), dtype=tf.int32)
-        tok = tf.keras.layers.Input((self.config.exp.max_len,), dtype=tf.int32)
+        ids = tf.keras.layers.Input((self.config.data.roberta.max_len,), dtype=tf.int32)
+        att = tf.keras.layers.Input((self.config.data.roberta.max_len,), dtype=tf.int32)
+        tok = tf.keras.layers.Input((self.config.data.roberta.max_len,), dtype=tf.int32)
         
         # Network architecture
-        config = RobertaConfig.from_pretrained(self.config.exp.roberta_path +'config-roberta-base.json') 
-        bert_model = TFRobertaModel.from_pretrained(self.config.exp.roberta_path +'pretrained-roberta-base.h5',config=config)
+        config = RobertaConfig.from_pretrained(self.config.data.roberta.path + self.config.data.roberta.config) 
+        bert_model = TFRobertaModel.from_pretrained(self.config.data.roberta.path + self.config.data.roberta.roberta_weights ,config=config)
         x = bert_model(ids,attention_mask=att,token_type_ids=tok)
 
-        x1 = tf.keras.layers.Dropout(0.1)(x[0])
-        x1 = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64,return_sequences=True))(x1)
-        x1 = tf.keras.layers.Dropout(0.1)(x1) 
-        x1 = tf.keras.layers.Dense(1)(x1)
-        x1 = tf.keras.layers.Flatten()(x1)
-        x1 = tf.keras.layers.Activation('softmax')(x1)
+        self.init_head(x[0])
+        self.add_dropout(0.1)
+        self.add_lstm(64,True)
+        self.add_dropout(0.1)
+        self.add_dense(1)
+        self.add_activation('softmax')
+        self.model = tf.keras.models.Model(inputs=[ids, att, tok], outputs=[self.start_head,self.end_head])
+        self.model.compile(loss=self.config.model.loss, optimizer=self.config.model.optimizer)
+    
+    def init_head(self, output_state):
+        self.start_head = output_state
+        self.end_head = output_state
 
-        x2 = tf.keras.layers.Dropout(0.1)(x[0])
-        x2 = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64,return_sequences=True))(x2)  
-        x2 = tf.keras.layers.Dropout(0.1)(x2)  
-        x2 = tf.keras.layers.Dense(1)(x2)
-        x2 = tf.keras.layers.Flatten()(x2)
-        x2 = tf.keras.layers.Activation('softmax')(x2)
+    def add_dropout(self, rate):
+        self.start_head =  tf.keras.layers.Dropout(rate)(self.start_head)
+        self.end_head =  tf.keras.layers.Dropout(rate)(self.end_head)
+    
+    def add_lstm(self, nodes, return_sequences):
+        self.start_head = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(nodes,return_sequences=return_sequences))(self.start_head)
+        self.end_head = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(nodes,return_sequences=return_sequences))(self.end_head)
 
-        self.model = tf.keras.models.Model(inputs=[ids, att, tok], outputs=[x1,x2])
-        self.model.compile(loss='categorical_crossentropy', optimizer=self.config.model.optimizer)
+    def add_dense(self, nodes):
+        self.start_head = tf.keras.layers.Dense(nodes)(self.start_head)
+        self.end_head = tf.keras.layers.Dense(nodes)(self.end_head)
 
-    def load_weights(self):
-        self.model.load_weights(self.config.exp.roberta_path + self.config.exp.roberta_weights)
+    def add_activation(self,activation,flatten=True):
+        if flatten:
+            self.start_head = tf.keras.layers.Flatten()(self.start_head)
+            self.end_head = tf.keras.layers.Flatten()(self.end_head)
+        self.start_head = tf.keras.layers.Activation(activation)(self.start_head)
+        self.end_head = tf.keras.layers.Activation(activation)(self.end_head)

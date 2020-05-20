@@ -27,7 +27,7 @@ def main():
 
     print('Create the model.')
     model = RobertaModel(config)
-    model.load_weights() 
+    model.load() 
 
     print('Creating the Experiment')
     experiment = Experiment(api_key=config.exp.comet_api_key, project_name=config.exp.name, auto_output_logging="simple")

@@ -1,16 +1,29 @@
 {
   "exp": {
     "name": "roberta_kaggle",
-    "comet_api_key":  "GumcB0S2230qAD8whgeRPjGdL",
-    "data_path" : {"train": "datasets/train.csv",
-                   "test": "datasets/test.csv"},
-    "roberta_path" : "datasets/tf-roberta/",
-    "roberta_weights" : "v1-roberta-pretrained.h5",
-    "max_len" : 128
+    "comet_api_key":  "insert-api-key"
+  },
+  "data": {
+    "data_path" : {
+      "train": "datasets/train.csv",
+      "test": "datasets/test.csv"
+    },
+    "roberta": {
+      "path" : "datasets/tf-roberta/",
+      "config" : "config-roberta-base.json",
+      "roberta_weights" : "pretrained-roberta-base.h5",
+      "vocab" : "vocab-roberta-base.json",
+      "merges" : "merges-roberta-base.txt",
+      "lowercase" : true,
+      "add_prefix_space" : true,
+      "max_len" : 128
+    }
   },
   "model":{
     "learning_rate": 0.001,
-    "optimizer": "adam"
+    "optimizer": "adam",
+    "weights" : "datasets/v1-roberta-pretrained.h5",
+    "loss" : "categorical_crossentropy"
   },
   "trainer":{
     "num_epochs": 1,
