@@ -12,11 +12,15 @@ This was originally a project submission for Kaggle's Tweet phrase extraction to
 - [Acknowledgements](#acknowledgements)
 
 # Installation and Usage
-- Install requirements on your virtual environment
- `pip install -r requirements.txt`
+- Install requirements on your virtual environment  
+
+   `pip install -r requirements.txt`
+
 - Update configurations(data/model path) in configs folder
+
 - Run *main.py* to train model from scratch
-- Make predictions by running *predict.py*, then the following command:
+
+- Make predictions by running *predict.py*, then the following command:  
   `-curl -X POST -F file=@datasets/test.csv "http://localhost:5000/predict"`
 
 # Metrics Tracking
@@ -43,7 +47,7 @@ metrics = {
 These metrics or hyper parameters are then available under their respective tabs
 &nbsp;
 ![](/images/cometml1.png)
-&nbsp;
+&nbsp;  
 If you have GitHub linked, you can reproduce the exact commit of a specific Experiment
 &nbsp;
 ![](/images/cometml2.png)
@@ -135,7 +139,7 @@ You will need the following files which can be found at [cdeotte's kaggle datase
 Downloading the files is not necessary; You can also initialize your own config or architecture by referring to the [HuggingFace documentation](https://huggingface.co/transformers/model_doc/roberta.html)
 
 # Acknowledgements
-Project Template adapted [here](https://github.com/Ahmkel/Keras-Project-Template)
-Data Tokenization and roBERTa model loading adapted [here](https://www.kaggle.com/cdeotte/tensorflow-roberta-0-705)
+Project Template adapted [here](https://github.com/Ahmkel/Keras-Project-Template)  
+Data Tokenization and roBERTa model loading adapted [here ](https://www.kaggle.com/cdeotte/tensorflow-roberta-0-705)  
 Model architecture inspired from a [Stanford CS224 course project](https://web.stanford.edu/class/archive/cs/cs224n/cs224n.1194/reports/default/15848021.pdf)
 
