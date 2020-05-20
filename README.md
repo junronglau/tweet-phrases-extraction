@@ -1,5 +1,5 @@
 # Tweet Phrases Extraction 
-This was originally a project submission for Kaggle's Tweet phrase extraction to explore Google's BERT and its variants, as well as a QA approach to extracting relevant text from a document. For learning purposes, it is refactored and deployed as an API using Flask and Docker. You can train your own model and run predictions on it if you have the GPU capabilities.
+This was originally a submission for Kaggle's Tweet phrase extraction to explore Google's BERT and its variants, as well as a QA approach to extracting relevant text from a document. For learning purposes, it is refactored and deployed as an API using Flask and Docker. You can train your own model and run predictions on it if you have the GPU capabilities.
 
 # Table Of Contents
 - [Installation and Usage](#installation-and-usage)
