@@ -13,9 +13,8 @@ This was originally a project submission for Kaggle's Tweet phrase extraction to
 
 # Installation and Usage
 - Install requirements on your virtual environment  
-
-   `pip install -r requirements.txt`
-
+`pip install -r requirements.txt`
+   
 - Update configurations(data/model path) in configs folder
 
 - Run *main.py* to train model from scratch
